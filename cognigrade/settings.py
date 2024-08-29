@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-b!#(v6634w2f0@4!a&35)bgm=#dfp8+gjvi4_&=3kam#=bkt2u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 DB_PREFIX = 'congnigrade'
 
@@ -83,7 +83,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cognigrade.wsgi.application'
+# WSGI_APPLICATION = 'cognigrade.wsgi.application'
+# Only for vercel
+WSGI_APPLICATION = 'cognigrade.wsgi.app'
 
 
 # Database

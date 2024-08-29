@@ -100,6 +100,9 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD', 'postgres'),
         'HOST': config('DB_HOST', 'localhost'),
         'PORT': config('DB_PORT', '5432'),
+        'OPTIONS': {
+            'sslmode': config('DB_SSLMODE', 'prefer')
+        }
     }
 }
 

@@ -49,7 +49,8 @@ INSTALLED_APPS = [
 ]
 
 OWN_APPS = [
-    'cognigrade.accounts'
+    'cognigrade.accounts',
+    'cognigrade.institutions'
 ]
 
 INSTALLED_APPS += OWN_APPS

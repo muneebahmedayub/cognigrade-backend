@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.conf import settings
+from cognigrade.institutions.models import Institutions
 from .choices import RoleChoices
 from .managers import UserManager
 
@@ -43,6 +44,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True,
         related_name='deleted_by_user'
+    )
+
+    institution = models.ForeignKey(
+        'institutions.Institutions',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='institution_admin'
     )
 
     @property

@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
             'role',
             'email',
             'password',
+            'institution',
             'is_active',
             'is_deleted',
             'deleted_on',

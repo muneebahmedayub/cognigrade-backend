@@ -24,10 +24,12 @@ from rest_framework_simplejwt.views import (
 )
 
 from cognigrade.accounts.urls import users_router
+from cognigrade.institutions.urls import institutions_router
 
 
 router = DefaultRouter()
 router.registry.extend(users_router.registry)
+router.registry.extend(institutions_router.registry)
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),

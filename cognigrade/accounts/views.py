@@ -10,11 +10,12 @@ from cognigrade.utils.paginations import PagePagination
 from .serializers import UserSerializer
 from .models import User
 from .utils import delete_user
+from .permissions import IsSuperAdminUser, IsAdminUser
 
 class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = PagePagination
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = ()
     queryset = User.objects.all()
 
     def get_queryset(self):
@@ -22,10 +23,21 @@ class UserViewSet(ModelViewSet):
         if self.request.user.is_authenticated:
             if self.request.user.is_superadmin:
                 return qs
+            elif self.request.user.is_admin:
+                return qs.filter(institution=self.request.user.institution)
             else :
                 return qs.none()
         else:
             return qs.none()
+        
+    def initial(self, request, *args, **kwargs):
+        if self.permission_classes and len(self.permission_classes):
+            pass
+        elif request.method in permissions.SAFE_METHODS:
+            self.permission_classes = (permissions.AllowAny,)
+        else:
+            self.permission_classes = (IsSuperAdminUser, IsAdminUser,)
+        return super().initial(request, *args, **kwargs)
     
 
     def destroy(self, request, *args, **kwargs):

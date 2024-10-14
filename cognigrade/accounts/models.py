@@ -51,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='institution_admin'
+        related_name='institution_user'
     )
 
     @property
@@ -69,6 +69,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_student(self):
         return self.role == RoleChoices.STUDENT
+    
+    @property
+    def insitution_teachers(self):
+        if self.is_superadmin or self.is_admin:
+            return self.institution.users.filter(role=RoleChoices.TEACHER)
+        else:
+            return None
+        
+    @property
+    def insitution_students(self):
+        if self.is_superadmin or self.is_admin:
+            return self.institution.users.filter(role=RoleChoices.STUDENT)
+        else:
+            return None
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

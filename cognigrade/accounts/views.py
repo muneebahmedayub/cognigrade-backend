@@ -15,7 +15,7 @@ from .permissions import IsSuperAdminUser, IsAdminUser
 class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = PagePagination
-    permission_classes = ()
+    permission_classes = []
     queryset = User.objects.all()
 
     def get_queryset(self):
@@ -36,8 +36,8 @@ class UserViewSet(ModelViewSet):
         elif request.method in permissions.SAFE_METHODS:
             self.permission_classes = (permissions.AllowAny,)
         else:
-            self.permission_classes = (IsSuperAdminUser, IsAdminUser,)
-        return super().initial(request, *args, **kwargs)
+            self.permission_classes = [IsSuperAdminUser|IsAdminUser]
+        return super(UserViewSet, self).initial(request, *args, **kwargs)
     
 
     def destroy(self, request, *args, **kwargs):

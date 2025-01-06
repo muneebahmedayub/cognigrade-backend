@@ -49,11 +49,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_filters',
 ]
 
 OWN_APPS = [
     'cognigrade.accounts',
-    'cognigrade.institutions'
+    'cognigrade.institutions',
+    'cognigrade.courses',
+    'cognigrade.omr'
 ]
 
 INSTALLED_APPS += OWN_APPS

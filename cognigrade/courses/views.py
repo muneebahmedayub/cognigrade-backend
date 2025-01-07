@@ -20,9 +20,9 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif user.is_admin:
             return super().get_queryset().filter(institution=user.institution)
         elif user.is_teacher:
-            return super().get_queryset().filter(teacher=user)
+            return super().get_queryset().filter(classrooms__teacher=user).distinct()
         elif user.is_student:
-            return super().get_queryset().filter(classrooms__enrollments__student=user)
+            return super().get_queryset().filter(classrooms__enrollments__student=user).distinct()
         
     
 class ClassroomViewSet(viewsets.ModelViewSet):

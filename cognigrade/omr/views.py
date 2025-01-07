@@ -14,7 +14,7 @@ class OMRViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'teacher':
-            return OMR.objects.filter(teacher=user)
+            return OMR.objects.filter(classroom__teacher=user)
         elif user.role == 'student':
             return OMR.objects.filter(classroom__enrollments__student=user)
         elif user.role == 'admin':

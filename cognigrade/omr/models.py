@@ -1,12 +1,12 @@
 from django.db import models
 from cognigrade.utils.models import BaseModel
-from cognigrade.institutions.models import Institutions
+from cognigrade.courses.models import Classroom
 from cognigrade.accounts.models import User
 
 
 class OMR(BaseModel):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE)
-    classroom = models.ForeignKey(Institutions, on_delete=models.CASCADE)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
 
 

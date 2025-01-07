@@ -53,6 +53,26 @@ class UserViewSet(ModelViewSet):
                     "code": "deleted"
                 }
             )
+        elif request.user.is_admin:
+            user = self.get_object()
+            if user.institution == request.user.institution:
+                if not user.is_deleted:
+                    delete_user(user, request)
+                    user.save()
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                raise ValidationError(
+                    {
+                        "error": "User already deleted",
+                        "code": "deleted"
+                    }
+                )
+            else:
+                raise ValidationError(
+                    {
+                        "error": "User not in your institution",
+                        "code": "permission-deny"
+                    }
+                )
         else:
             raise ValidationError(
                 {

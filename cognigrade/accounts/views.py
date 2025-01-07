@@ -11,12 +11,13 @@ from .serializers import UserSerializer
 from .models import User
 from .utils import delete_user
 from .permissions import IsSuperAdminUser, IsAdminUser
-
+from .filters import UserFilter
 class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = PagePagination
     permission_classes = []
     queryset = User.objects.all()
+    filterset_class = UserFilter
 
     def get_queryset(self):
         qs = User.objects.all()
@@ -85,5 +86,12 @@ class UserViewSet(ModelViewSet):
     @action(url_path='me', detail=False, methods=['GET'])
     def me(self, request, **kwargs):
         user = request.user
-        return Response(UserSerializer(user).data)
+        if user is None: 
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if user.is_authenticated:
+            if user.is_deleted:
+                return Response(status=status.HTTP_410_GONE)
+            return Response(UserSerializer(user).data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     

@@ -9,7 +9,7 @@ class BaseOrderBy(filters.FilterSet):
 
 
 class BaseCreateUpdatedOnFilter(filters.FilterSet):
-    created_start = filters.CharFilter(field_name='created_on', lookup_expr='date__gte')
-    created_end = filters.CharFilter(field_name='created_on', lookup_expr='date__lte')
-    update_start = filters.CharFilter(field_name='updated_on', lookup_expr='date__gte')
-    update_end = filters.CharFilter(field_name='updated_on', lookup_expr='date__lte')
+    created_after = filters.CharFilter(field_name='created_on', lookup_expr='date__gte')
+    created_before = filters.CharFilter(field_name='created_on', lookup_expr='date__lte')
+    updated_after = filters.CharFilter(field_name='updated_on', lookup_expr='date__gte')
+    updated_before = filters.CharFilter(field_name='updated_on', lookup_expr='date__lte')

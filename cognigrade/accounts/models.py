@@ -83,6 +83,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.institution.users.filter(role=RoleChoices.STUDENT)
         else:
             return None
+        
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

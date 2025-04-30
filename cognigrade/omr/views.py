@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import OMR
-from .serializer import OMRSerializer
+from .models import OMR, OMRSubmission
+from .serializer import OMRSerializer, OMRSubmissionSerializer
 from cognigrade.utils.paginations import PagePagination
 from cognigrade.utils.process_omr import process_omr
 from rest_framework.response import Response
@@ -39,9 +39,20 @@ class OMRViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No image file provided'}, status=status.HTTP_400_BAD_REQUEST)
         
         correct_answers = [chr(64 + answer) for answer in omr.questions.values_list('answer', flat=True)]
-        
+        # correct_answers = [0] * 30
+        # for i, answer in enumerate(omr.questions.values_list('answer', flat=True)):
+        #     correct_answers[i] = answer
+        # print("correct_answers", correct_answers)
+
         image_path = os.path.join(settings.MEDIA_ROOT, 'omr', f"{image_file.name}_{random.randint(1, 1000000)}.jpg")
         with open(image_path, 'wb') as f:
             f.write(image_file.read())
         score, answers = process_omr(image_path, correct_answers)
         return Response({'score': score, 'answers': answers}, status=status.HTTP_200_OK)
+
+
+class OMRSubmissionViewSet(viewsets.ModelViewSet):
+    queryset = OMRSubmission.objects.all()
+    serializer_class = OMRSubmissionSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PagePagination

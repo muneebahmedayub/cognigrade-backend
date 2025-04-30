@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import OMR, OMRQuestions
+from .models import OMR, OMRQuestions, OMRSubmission
 from django.db import transaction
+
 
 class OMRQuestionsSerializer(serializers.ModelSerializer):
     omr = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
@@ -43,3 +44,15 @@ class OMRSerializer(serializers.ModelSerializer):
         omr.save()
         return omr
     
+class OMRSubmissionSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
+    class Meta:
+        model = OMRSubmission
+        fields = '__all__'
+
+    @transaction.atomic
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)
+

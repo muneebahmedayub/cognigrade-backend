@@ -1,4 +1,3 @@
-
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions, status
 from rest_framework.decorators import action
@@ -26,8 +25,10 @@ class UserViewSet(ModelViewSet):
                 return qs
             elif self.request.user.is_admin:
                 return qs.filter(institution=self.request.user.institution)
-            else :
-                return qs.none()
+            elif self.request.user.is_teacher:
+                return qs.filter(classrooms__in=self.request.user.assigned_classrooms.all())
+            else:
+                return qs.filter(id=self.request.user.id)
         else:
             return qs.none()
         

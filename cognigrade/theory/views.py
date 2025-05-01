@@ -44,7 +44,7 @@ class TheoryViewSet(viewsets.ModelViewSet):
         for submission in submissions:
             submission.evaluate()
             submission.save()
-        return Response({'message': 'Submissions evaluated'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Submissions evaluated', 'submissions': TheorySubmissionSerializer(submissions, many=True).data}, status=status.HTTP_200_OK)
     
     @transaction.atomic
     @action(url_path='check-plagiarism', detail=True, methods=['post'], permission_classes=[IsSuperAdminUser|IsAdminUser|IsTeacher])

@@ -41,9 +41,9 @@ class TheorySubmission(BaseModel):
         for answer in self.answers.all():
             grade, similarity = grade_answer_proc(answer.answer, answer.question.answer, answer.question.answer_type)
             print(grade, similarity)
-            answer.marks = similarity * 100
+            answer.marks = similarity * answer.question.marks
             answer.save()
-            self.score += grade
+            self.score += answer.marks
             
         self.save()
     

@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import models
 from cognigrade.accounts.permissions import IsSuperAdminUser, IsAdminUser, IsTeacher
+from django.db import transaction
 
 
 # Create your views here.
@@ -33,7 +34,8 @@ class TheoryViewSet(viewsets.ModelViewSet):
             return qs.all()
         return qs.none()
     
-    @action(url_path='evaluate', detail=True, methods=['post'])
+    @transaction.atomic
+    @action(url_path='evaluate', detail=True, methods=['post'], permission_classes=[IsSuperAdminUser|IsAdminUser|IsTeacher])
     def evaluate(self, request, *args, **kwargs):
         theory = self.get_object()
         submissions = TheorySubmission.objects.filter(theory=theory)
@@ -42,8 +44,9 @@ class TheoryViewSet(viewsets.ModelViewSet):
         for submission in submissions:
             submission.evaluate()
             submission.save()
-        return Response({'message': 'Submissions evaluated'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Submissions evaluated', 'score': submissions.score}, status=status.HTTP_200_OK)
     
+    @transaction.atomic
     @action(url_path='check-plagiarism', detail=True, methods=['post'], permission_classes=[IsSuperAdminUser|IsAdminUser|IsTeacher])
     def check_plagiarism(self, request, *args, **kwargs):
         """Check for plagiarism across all submissions of a theory"""

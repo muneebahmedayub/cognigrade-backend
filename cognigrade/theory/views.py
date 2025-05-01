@@ -36,7 +36,7 @@ class TheoryViewSet(viewsets.ModelViewSet):
     @action(url_path='evaluate', detail=True, methods=['post'])
     def evaluate(self, request, *args, **kwargs):
         theory = self.get_object()
-        submissions = TheorySubmission.objects.filter(theory=theory, student=request.user)
+        submissions = TheorySubmission.objects.filter(theory=theory)
         if submissions.count() == 0:
             return Response({'error': 'No submissions found'}, status=status.HTTP_400_BAD_REQUEST)
         for submission in submissions:

@@ -4,3 +4,5 @@ env
 media
 
 cognigrade/utils/models
+
+__pycache__

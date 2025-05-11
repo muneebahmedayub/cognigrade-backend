@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from .models import Theory, TheoryQuestions, TheorySubmission, TheorySubmissionAnswer
+from .models import (
+    Theory, 
+    TheoryQuestions, 
+    TheorySubmission, 
+    TheorySubmissionAnswer,
+    PlagiarismRecord,
+    QuestionPlagiarismRecord
+)
 from django.db import transaction
 
 class TheoryQuestionsSerializer(serializers.ModelSerializer):
@@ -74,7 +81,7 @@ class TheorySubmissionSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data['student'] = user
         submission = super().create(validated_data)
-        print(answers)
+        
         if answers is None:
             return submission
         
@@ -99,4 +106,60 @@ class TheorySubmissionSerializer(serializers.ModelSerializer):
         submission.answers.set(keep_answers)
         submission.save()
         return submission
+
+
+class QuestionPlagiarismRecordSerializer(serializers.ModelSerializer):
+    question_text = serializers.SerializerMethodField()
+    answer1_text = serializers.SerializerMethodField()
+    answer2_text = serializers.SerializerMethodField()
     
+    class Meta:
+        model = QuestionPlagiarismRecord
+        fields = (
+            'id', 'plagiarism_record', 'question', 'similarity_score',
+            'question_text', 'answer1_text', 'answer2_text'
+        )
+    
+    def get_question_text(self, obj):
+        return obj.question.question
+    
+    def get_answer1_text(self, obj):
+        try:
+            answer = TheorySubmissionAnswer.objects.get(
+                submission=obj.plagiarism_record.submission1,
+                question=obj.question
+            )
+            return answer.answer
+        except TheorySubmissionAnswer.DoesNotExist:
+            return ""
+    
+    def get_answer2_text(self, obj):
+        try:
+            answer = TheorySubmissionAnswer.objects.get(
+                submission=obj.plagiarism_record.submission2,
+                question=obj.question
+            )
+            return answer.answer
+        except TheorySubmissionAnswer.DoesNotExist:
+            return ""
+
+
+class PlagiarismRecordSerializer(serializers.ModelSerializer):
+    student1_name = serializers.SerializerMethodField()
+    student2_name = serializers.SerializerMethodField()
+    question_records = QuestionPlagiarismRecordSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = PlagiarismRecord
+        fields = (
+            'id', 'submission1', 'submission2', 'similarity_score', 
+            'threshold_used', 'student1_name', 'student2_name', 'question_records'
+        )
+    
+    def get_student1_name(self, obj):
+        # Fixed: Access get_full_name as a property, not a method
+        return obj.submission1.student.get_full_name or obj.submission1.student.email
+    
+    def get_student2_name(self, obj):
+        # Fixed: Access get_full_name as a property, not a method
+        return obj.submission2.student.get_full_name or obj.submission2.student.email
